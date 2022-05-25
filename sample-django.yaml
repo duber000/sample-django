@@ -1,0 +1,32 @@
+databases:
+- engine: PG
+  name: db
+  num_nodes: 1
+  size: basic-xxs
+  version: "12"
+name: sample-django
+region: nyc
+services:
+- environment_slug: python
+  envs:
+  - key: DEBUG
+    scope: RUN_AND_BUILD_TIME
+    value: "True"
+  - key: DJANGO_ALLOWED_HOSTS
+    scope: RUN_AND_BUILD_TIME
+    value: ${APP_DOMAIN}
+  - key: DATABASE_URL
+    scope: RUN_AND_BUILD_TIME
+    value: ${db.DATABASE_URL}
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: duber000/sample-django
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  name: sample-django
+  routes:
+  - path: /
+  run_command: gunicorn --worker-tmp-dir /dev/shm mysite.wsgi
+  source_dir: /
